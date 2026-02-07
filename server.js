@@ -20,20 +20,20 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 // Servir archivos estáticos del frontend (opcional)
 //app.use(express.static(path.join(__dirname, '../frontend')));
-app.use(
-  express.static(path.join(__dirname, "https://virtual-rifa.vercel.app/")),
-);
+// app.use(
+//   express.static(path.join(__dirname, "https://virtual-rifa.vercel.app/")),
+// );
 
 // Ruta raíz
 // app.get('/', (req, res) => {
 //   res.sendFile(path.join(__dirname, '../frontend/index.html'));
 // });
 
-app.get("/", (req, res) => {
-  res.sendFile(
-    path.join(__dirname, "https://virtual-rifa.vercel.app/index.html"),
-  );
-});
+// app.get("/", (req, res) => {
+//   res.sendFile(
+//     path.join(__dirname, "https://virtual-rifa.vercel.app/index.html"),
+//   );
+// });
 
 // Iniciar servidor tras inicializar la DB y cargar rutas modulares
 initDB().then(() => {
