@@ -6,6 +6,7 @@ import {
   validarDatosLoginMiddleware,
 } from "../middleware/validarDatos.js";
 import validarAutenticacion from "../middleware/validarAutenticacion.js";
+import validarAdmin from "../middleware/validarAdmin.js";
 
 const router = express.Router();
 
@@ -19,6 +20,19 @@ router.get("/buyers", controllers.getBuyers);
 // ==================== RUTAS DE PAGO ====================
 router.put("/buyers/:compradorId/payment", controllers.markAsPaid);
 router.get("/payment-stats", controllers.getPaymentStats);
+
+// ==================== RUTAS DE ADMINISTRACIÓN ====================
+router.post("/admin/reiniciar-rifa", validarAdmin, controllers.reiniciarRifa);
+router.put(
+  "/admin/liberar-numero/:numeroId",
+  validarAdmin,
+  controllers.liberarNumero,
+);
+router.delete(
+  "/admin/eliminar-comprador/:compradorId",
+  validarAdmin,
+  controllers.eliminarComprador,
+);
 
 router.get("/health", controllers.health);
 

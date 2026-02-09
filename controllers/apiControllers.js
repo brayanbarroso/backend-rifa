@@ -210,6 +210,151 @@ export async function getPaymentStats(req, res) {
 export function health(req, res) {
   res.json({ status: "OK", message: "API funcionando correctamente" });
 }
+
+// ==================== MÉTODOS DE ADMINISTRACIÓN ====================
+
+// Reiniciar la rifa (eliminar todos los compradores y liberar todos los números)
+export async function reiniciarRifa(req, res) {
+  const pool = getPool();
+  const connection = await pool.getConnection();
+
+  try {
+    await connection.beginTransaction();
+
+    // Eliminar todos los compradores
+    await connection.query("DELETE FROM compradores");
+
+    // Liberar todos los números
+    await connection.query("UPDATE numeros SET vendido = false");
+
+    await connection.commit();
+
+    res.json({
+      success: true,
+      message:
+        "Rifa reiniciada exitosamente. Todos los números han sido liberados.",
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error al reiniciar rifa:", error);
+    res.status(500).json({ error: "Error al reiniciar la rifa" });
+  } finally {
+    connection.release();
+  }
+}
+
+// Liberar un número específico (y eliminar su comprador)
+export async function liberarNumero(req, res) {
+  const pool = getPool();
+  const connection = await pool.getConnection();
+
+  try {
+    await connection.beginTransaction();
+
+    const { numeroId } = req.params;
+
+    if (!numeroId) {
+      await connection.rollback();
+      return res.status(400).json({ error: "ID del número es requerido" });
+    }
+
+    // Verificar que el número existe
+    const [numero] = await connection.query(
+      "SELECT id, vendido, numero FROM numeros WHERE id = ?",
+      [numeroId],
+    );
+
+    if (numero.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: "Número no encontrado" });
+    }
+
+    // Eliminar el comprador asociado si existe
+    await connection.query("DELETE FROM compradores WHERE numero_id = ?", [
+      numeroId,
+    ]);
+
+    // Liberar el número
+    await connection.query("UPDATE numeros SET vendido = false WHERE id = ?", [
+      numeroId,
+    ]);
+
+    await connection.commit();
+
+    res.json({
+      success: true,
+      message: `Número ${numero[0].numero} liberado exitosamente`,
+      numeroId,
+      numero: numero[0].numero,
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error al liberar número:", error);
+    res.status(500).json({ error: "Error al liberar el número" });
+  } finally {
+    connection.release();
+  }
+}
+
+// Eliminar un comprador específico (y liberar su número)
+export async function eliminarComprador(req, res) {
+  const pool = getPool();
+  const connection = await pool.getConnection();
+
+  try {
+    await connection.beginTransaction();
+
+    const { compradorId } = req.params;
+
+    if (!compradorId) {
+      await connection.rollback();
+      return res.status(400).json({ error: "ID del comprador es requerido" });
+    }
+
+    // Obtener los datos del comprador
+    const [comprador] = await connection.query(
+      "SELECT id, numero_id FROM compradores WHERE id = ?",
+      [compradorId],
+    );
+
+    if (comprador.length === 0) {
+      await connection.rollback();
+      return res.status(404).json({ error: "Comprador no encontrado" });
+    }
+
+    // Obtener información del número para la respuesta
+    const [numero] = await connection.query(
+      "SELECT numero FROM numeros WHERE id = ?",
+      [comprador[0].numero_id],
+    );
+
+    // Eliminar el comprador
+    await connection.query("DELETE FROM compradores WHERE id = ?", [
+      compradorId,
+    ]);
+
+    // Liberar el número
+    await connection.query("UPDATE numeros SET vendido = false WHERE id = ?", [
+      comprador[0].numero_id,
+    ]);
+
+    await connection.commit();
+
+    res.json({
+      success: true,
+      message: "Comprador eliminado exitosamente y número liberado",
+      compradorId,
+      numeroLiberado: numero.length > 0 ? numero[0].numero : "N/A",
+    });
+  } catch (error) {
+    await connection.rollback();
+    console.error("Error al eliminar comprador:", error);
+    res.status(500).json({ error: "Error al eliminar el comprador" });
+  } finally {
+    connection.release();
+  }
+}
+
 export default {
   getNumbers,
   getNumberById,
@@ -219,4 +364,7 @@ export default {
   markAsPaid,
   getPaymentStats,
   health,
+  reiniciarRifa,
+  liberarNumero,
+  eliminarComprador,
 };
