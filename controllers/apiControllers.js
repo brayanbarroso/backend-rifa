@@ -1,7 +1,7 @@
 // Obtener todos los números
 import { getPool } from "../config/db.js";
 
-export async function getNumbers(req, res) {
+const getNumbers = async (req, res) => {
   try {
     const pool = getPool();
     const [rows] = await pool.query(`
@@ -18,10 +18,10 @@ export async function getNumbers(req, res) {
     console.error("Error al obtener números:", error);
     res.status(500).json({ error: "Error al obtener los números" });
   }
-}
+};
 
 // Obtener un número específico
-export async function getNumberById(req, res) {
+const getNumberById = async (req, res) => {
   try {
     const pool = getPool();
     const [rows] = await pool.query(
@@ -45,10 +45,10 @@ export async function getNumberById(req, res) {
     console.error("Error al obtener número:", error);
     res.status(500).json({ error: "Error al obtener el número" });
   }
-}
+};
 
 // Comprar un número
-export async function purchaseNumber(req, res) {
+const purchaseNumber = async (req, res) => {
   const pool = getPool();
   const connection = await pool.getConnection();
 
@@ -104,10 +104,10 @@ export async function purchaseNumber(req, res) {
   } finally {
     connection.release();
   }
-}
+};
 
 // Obtener estadísticas
-export async function getStats(req, res) {
+const getStats = async (req, res) => {
   try {
     const pool = getPool();
     const [stats] = await pool.query(`
@@ -123,10 +123,10 @@ export async function getStats(req, res) {
     console.error("Error al obtener estadísticas:", error);
     res.status(500).json({ error: "Error al obtener estadísticas" });
   }
-}
+};
 
 // Obtener todos los compradores
-export async function getBuyers(req, res) {
+const getBuyers = async (req, res) => {
   try {
     const pool = getPool();
     const [rows] = await pool.query(`
@@ -142,10 +142,10 @@ export async function getBuyers(req, res) {
     console.error("Error al obtener compradores:", error);
     res.status(500).json({ error: "Error al obtener compradores" });
   }
-}
+};
 
 // Marcar comprador como pagado
-export async function markAsPaid(req, res) {
+const markAsPaid = async (req, res) => {
   try {
     const pool = getPool();
     const { compradorId } = req.params;
@@ -184,10 +184,10 @@ export async function markAsPaid(req, res) {
     console.error("Error al actualizar estado de pago:", error);
     res.status(500).json({ error: "Error al actualizar estado de pago" });
   }
-}
+};
 
 // Obtener estadísticas de pagos
-export async function getPaymentStats(req, res) {
+const getPaymentStats = async (req, res) => {
   try {
     const pool = getPool();
     const [stats] = await pool.query(`
@@ -204,17 +204,17 @@ export async function getPaymentStats(req, res) {
     console.error("Error al obtener estadísticas de pago:", error);
     res.status(500).json({ error: "Error al obtener estadísticas de pago" });
   }
-}
+};  
 
 // Health
-export function health(req, res) {
+const health = async (req, res) => {
   res.json({ status: "OK", message: "API funcionando correctamente" });
-}
+};
 
 // ==================== MÉTODOS DE ADMINISTRACIÓN ====================
 
 // Reiniciar la rifa (eliminar todos los compradores y liberar todos los números)
-export async function reiniciarRifa(req, res) {
+const reiniciarRifa = async (req, res) => {
   const pool = getPool();
   const connection = await pool.getConnection();
 
@@ -241,10 +241,10 @@ export async function reiniciarRifa(req, res) {
   } finally {
     connection.release();
   }
-}
+};
 
 // Liberar un número específico (y eliminar su comprador)
-export async function liberarNumero(req, res) {
+const liberarNumero = async (req, res) => {
   const pool = getPool();
   const connection = await pool.getConnection();
 
@@ -294,10 +294,10 @@ export async function liberarNumero(req, res) {
   } finally {
     connection.release();
   }
-}
+};
 
 // Eliminar un comprador específico (y liberar su número)
-export async function eliminarComprador(req, res) {
+const eliminarComprador = async (req, res) => {
   const pool = getPool();
   const connection = await pool.getConnection();
 
@@ -353,9 +353,9 @@ export async function eliminarComprador(req, res) {
   } finally {
     connection.release();
   }
-}
+};  
 
-export default {
+export {
   getNumbers,
   getNumberById,
   purchaseNumber,
