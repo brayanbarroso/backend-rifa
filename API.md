@@ -702,6 +702,147 @@ result = response.json()
 
 ---
 
+## 📋 Endpoints de Configuración
+
+### 1. Obtener Configuración de la Rifa
+
+**GET** `/api/config`
+
+Obtiene la configuración actual de la rifa (fecha, lotería, premio, etc.). Este endpoint es público y no requiere autenticación.
+
+**Respuesta exitosa (200):**
+
+```json
+{
+  "success": true,
+  "data": {
+    "id": 1,
+    "fecha_rifa": "2026-02-27",
+    "loteria": "Lotería Nacional",
+    "valor_rifa": 15000.0,
+    "premio": 500000.0,
+    "medio_pago": "Nequi o Llave",
+    "responsable": "Responsable",
+    "actualizado_en": "2026-02-18T10:30:00.000Z"
+  }
+}
+```
+
+---
+
+### 2. Actualizar Toda la Configuración
+
+**PUT** `/api/config` (Requiere autenticación como admin)
+
+Actualiza uno o varios campos de la configuración de la rifa.
+
+**Headers:**
+
+```
+Authorization: Bearer <token_admin>
+```
+
+**Body (todos los campos son opcionales):**
+
+```json
+{
+  "fecha_rifa": "2026-02-27",
+  "loteria": "Lotería Nacional",
+  "valor_rifa": 15000.0,
+  "premio": 500000.0,
+  "medio_pago": "Nequi o Llave",
+  "responsable": "Responsable"
+}
+```
+
+**Respuesta exitosa (200):**
+
+```json
+{
+  "success": true,
+  "message": "Configuración actualizada correctamente",
+  "data": {
+    "id": 1,
+    "fecha_rifa": "2026-02-27",
+    "loteria": "Lotería Nacional",
+    "valor_rifa": 15000.0,
+    "premio": 500000.0,
+    "medio_pago": "Nequi o Llave",
+    "responsable": "Responsable",
+    "actualizado_en": "2026-02-18T10:35:00.000Z"
+  }
+}
+```
+
+---
+
+### 3. Actualizar un Campo Específico
+
+**PUT** `/api/config/:campo` (Requiere autenticación como admin)
+
+Actualiza un campo específico de la configuración.
+
+**Parámetros de ruta:**
+
+- `campo` (string): Nombre del campo a actualizar
+  - `fecha_rifa`
+  - `loteria`
+  - `valor_rifa`
+  - `premio`
+  - `medio_pago`
+  - `responsable`
+
+**Headers:**
+
+```
+Authorization: Bearer <token_admin>
+```
+
+**Body:**
+
+```json
+{
+  "valor": "Nuevo Valor"
+}
+```
+
+**Ejemplos:**
+
+```bash
+# Actualizar fecha
+curl -X PUT http://localhost:3000/api/config/fecha_rifa \
+  -H "Authorization: Bearer <token_admin>" \
+  -H "Content-Type: application/json" \
+  -d '{"valor": "2026-03-01"}'
+
+# Actualizar premio
+curl -X PUT http://localhost:3000/api/config/premio \
+  -H "Authorization: Bearer <token_admin>" \
+  -H "Content-Type: application/json" \
+  -d '{"valor": 600000.00}'
+```
+
+**Respuesta exitosa (200):**
+
+```json
+{
+  "success": true,
+  "message": "fecha_rifa actualizado correctamente",
+  "data": {
+    "id": 1,
+    "fecha_rifa": "2026-03-01",
+    "loteria": "Lotería Nacional",
+    "valor_rifa": 15000.0,
+    "premio": 500000.0,
+    "medio_pago": "Nequi o Llave",
+    "responsable": "Responsable",
+    "actualizado_en": "2026-02-18T10:40:00.000Z"
+  }
+}
+```
+
+---
+
 ## CORS
 
 La API está configurada para aceptar peticiones desde cualquier origen. En producción, se recomienda configurar orígenes específicos:

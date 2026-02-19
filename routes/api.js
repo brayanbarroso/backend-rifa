@@ -1,6 +1,7 @@
 import express from "express";
 import * as controllers from "../controllers/apiControllers.js";
 import * as userControllers from "../controllers/userControllers.js";
+import * as configControllers from "../controllers/configControllers.js";
 import {
   validarDatosRegistroMiddleware,
   validarDatosLoginMiddleware,
@@ -60,5 +61,15 @@ router.post(
   validarAutenticacion,
   userControllers.logoutAll,
 );
+
+// ==================== RUTAS DE CONFIGURACIÓN ====================
+// Obtener configuración (público)
+router.get("/config", configControllers.obtenerConfig);
+
+// Actualizar configuración (solo admin)
+router.put("/config", validarAdmin, configControllers.actualizarConfig);
+
+// Actualizar un campo específico (solo admin)
+router.put("/config/:campo", validarAdmin, configControllers.actualizarCampo);
 
 export default router;

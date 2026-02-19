@@ -69,6 +69,28 @@ CREATE TABLE sessions (
 );
 
 -- ============================================
+-- Tabla: config_rifa
+-- Almacena la configuración dinámica de la rifa
+-- ============================================
+CREATE TABLE IF NOT EXISTS config_rifa (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    fecha_rifa DATE NOT NULL,
+    loteria VARCHAR(100) NOT NULL,
+    valor_rifa DECIMAL(10, 2) NOT NULL,
+    premio DECIMAL(15, 2) NOT NULL,
+    medio_pago VARCHAR(100) NOT NULL,
+    responsable VARCHAR(100) NOT NULL,
+    actualizado_en TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    INDEX idx_actualizado (actualizado_en)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- ============================================
+-- Insertar configuración inicial de la rifa
+-- ============================================
+INSERT INTO config_rifa (fecha_rifa, loteria, valor_rifa, premio, medio_pago, responsable) 
+VALUES ('2026-02-27', 'Sinuano Noche', 15000.00, 500000.00, 'Efectivo, Nequi o Llave', 'Brian');
+
+-- ============================================
 -- Insertar los 100 números iniciales (00-99)
 -- ============================================
 INSERT INTO numeros (numero, vendido) VALUES
